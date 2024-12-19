@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
 import './App.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUser } from '@fortawesome/free-solid-svg-icons';
 
 function App() {
-  const [data, setData] = useState<any>([]);
+  const [data, setData] = useState<any[]>([]);
 
   useEffect(() => {
-    getGitHubData();
+    // getGitHubData();
   }, []);
 
   const getGitHubData = async () => {
@@ -19,6 +21,7 @@ function App() {
   return (
     <section>
       <h1>Hello</h1>
+      <FontAwesomeIcon icon={faUser} />
       <ul>
         {data.map((item: any) => (
           <li key={item.id}>
