@@ -1,36 +1,27 @@
-import { useEffect, useState } from 'react';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import './App.css';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser } from '@fortawesome/free-solid-svg-icons';
+import Home from './pages/Home';
+import About from './pages/About';
+import Contact from './pages/Contact';
+import CustomerLayout from './shared/layouts/CustomerLayout';
+import ManagerLayout from './shared/layouts/ManagerLayout';
+import AdminDashboard from './pages/manager/AdminDashboard';
 
 function App() {
-  const [data, setData] = useState<any[]>([]);
-
-  useEffect(() => {
-    // getGitHubData();
-  }, []);
-
-  const getGitHubData = async () => {
-    const response = await fetch(`https://api.github.com/users`);
-    const data = await response.json();
-    console.log(data);
-
-    setData(data);
-  };
-
   return (
-    <section>
-      <h1>Hello</h1>
-      <FontAwesomeIcon icon={faUser} />
-      <ul>
-        {data.map((item: any) => (
-          <li key={item.id}>
-            <img src={item.avatar_url} alt={item.login} width={100} />
-            <h3>{item.login}</h3>
-          </li>
-        ))}
-      </ul>
-    </section>
+    <BrowserRouter>
+      <div className="main-content min-h-screen flex flex-col">
+        <Routes>
+          {/* Customer Router */}
+          <Route path="/" element={<CustomerLayout><Home /></CustomerLayout>} />
+          <Route path="/about" element={<CustomerLayout><About /></CustomerLayout>} />
+          <Route path="/contact" element={<CustomerLayout><Contact /></CustomerLayout>} />
+
+          {/* Admin Router */}
+          <Route path="/manager/admin-dashboard" element={<ManagerLayout><AdminDashboard /></ManagerLayout>} />
+        </Routes>
+      </div>
+    </BrowserRouter>
   );
 }
 
