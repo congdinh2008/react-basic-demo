@@ -1,25 +1,33 @@
-import React from 'react';
-import logo from './logo.svg';
+import { useEffect, useState } from 'react';
 import './App.css';
 
 function App() {
+  const [data, setData] = useState<any>([]);
+
+  useEffect(() => {
+    getGitHubData();
+  }, []);
+
+  const getGitHubData = async () => {
+    const response = await fetch(`https://api.github.com/users`);
+    const data = await response.json();
+    console.log(data);
+
+    setData(data);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <section>
+      <h1>Hello</h1>
+      <ul>
+        {data.map((item: any) => (
+          <li key={item.id}>
+            <img src={item.avatar_url} alt={item.login} width={100} />
+            <h3>{item.login}</h3>
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }
 
