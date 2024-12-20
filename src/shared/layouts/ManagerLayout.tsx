@@ -6,9 +6,11 @@ function ManagerLayout({ children }: { children: React.ReactNode }) {
     return (
         <>
             <Header />
-            <main className='flex-1'>
+            <main className='flex-1 flex'>
                 <Sidebar />
-                {children}
+                <div className="main-content p-4">
+                    {children}
+                </div>
             </main>
             <Footer />
         </>

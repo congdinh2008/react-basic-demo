@@ -18,7 +18,7 @@ function App() {
           <Route path="/contact" element={<CustomerLayout><Contact /></CustomerLayout>} />
 
           {/* Admin Router */}
-          <Route path="/manager/admin-dashboard" element={<ManagerLayout><AdminDashboard /></ManagerLayout>} />
+          <Route path="/manager/dashboard" element={<ManagerLayout><AdminDashboard /></ManagerLayout>} />
         </Routes>
       </div>
     </BrowserRouter>
