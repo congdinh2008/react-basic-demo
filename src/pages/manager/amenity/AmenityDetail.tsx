@@ -12,7 +12,7 @@ function AmenityDetail({ item, onCancel }: { item: any, onCancel: any }) {
             name: item ? item.name : '',
             description: item ? item.description : '',
             price: item ? item.price : 0,
-            active: item ? item.active : true
+            isActive: item ? item.isActive : true
         },
         validationSchema: Yup.object({
             name: Yup.string().required('Name is required')
@@ -21,7 +21,7 @@ function AmenityDetail({ item, onCancel }: { item: any, onCancel: any }) {
             description: Yup.string().required('Description is required')
                 .max(500, 'Description must be at most 500 characters'),
             price: Yup.number().required('Price is required').min(0, 'Price must be greater than or equal to 0'),
-            active: Yup.boolean().required('Active is required').default(true)
+            isActive: Yup.boolean().required('Active is required').default(true)
         }),
         onSubmit: async (values) => {
             const apiUrl = 'http://localhost:5134/api/v1/Amenities';
@@ -52,7 +52,7 @@ function AmenityDetail({ item, onCancel }: { item: any, onCancel: any }) {
             {/* Detail */}
             <div className="card border border-slate-300 rounded-md">
                 <div className="card-header p-3">
-                    <h1>{item ? "Edit" : "Create"} Amenity</h1>
+                    <h2 className="text-xl font-semibold">{item ? "Edit" : "Create"} Amenity</h2>
                 </div>
                 <form onSubmit={formik.handleSubmit}>
                     <div className="card-body p-3 border-y border-slate-300 flex flex-wrap">
@@ -90,24 +90,23 @@ function AmenityDetail({ item, onCancel }: { item: any, onCancel: any }) {
                             ) : null}
                         </div>
                         <div className="form-group w-1/2 p-2">
-                            <label htmlFor="active" className="block mb-3">Active</label>
-                            <input type="checkbox" id="active" name="active"
+                            <label htmlFor="isActive" className="block mb-3">Active</label>
+                            <input type="checkbox" id="isActive" name="isActive"
                                 onChange={formik.handleChange}
                                 onBlur={formik.handleBlur}
-                                value={formik.values.active}
+                                checked={formik.values.isActive}
                                 className="p-2 border border-slate-300 rounded-sm" />
-                            {formik.touched.active && formik.errors.active ? (
-                                <div className="text-red-500">{typeof formik.errors.active === 'string' ? formik.errors.active : ''}</div>
+                            {formik.touched.isActive && formik.errors.isActive ? (
+                                <div className="text-red-500">{typeof formik.errors.isActive === 'string' ? formik.errors.isActive : ''}</div>
                             ) : null}
                         </div>
-
                     </div>
                     <div className="card-footer p-3 flex justify-between">
-                        <button type="button" className="p-2 px-4 bg-green-500 text-white hover:bg-green-700 rounded-full" onClick={onCancel}>
+                        <button type="button" className="p-2 px-4 bg-slate-200 hover:bg-slate-300 rounded-full" onClick={onCancel}>
                             <FontAwesomeIcon icon={faRotateLeft} className="mr-2" /> Cancel
                         </button>
                         <div className="search-actions space-x-3">
-                            <button type="reset" className="p-2 px-4 bg-slate-300 text-white hover:bg-slate-500 rounded-full">
+                            <button type="reset" className="p-2 px-4 bg-slate-300 text-white hover:bg-slate-500 rounded-full" onClick={formik.handleReset}>
                                 <FontAwesomeIcon icon={faEraser} className="mr-2" /> Clear
                             </button>
                             <button type="submit" className="p-2 px-4 bg-blue-500 text-white hover:bg-blue-700 rounded-full">
