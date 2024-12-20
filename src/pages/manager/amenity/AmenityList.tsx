@@ -1,23 +1,37 @@
 import { faEdit, faEraser, faPlus, faSearch, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import axios from "axios";
 import { useEffect, useState } from "react";
 
 function AmenityList() {
     const [data, setData] = useState<any[]>([]);
+    const [keyword, setKeyword] = useState<string>('');
 
     // Call API from BE => setData(response.data);
     useEffect(() => {
-        fetchData();
+        searchData();
     }, []);
 
-    const fetchData = async () => {
+    const searchData = async () => {
         try {
-            const response = await fetch('http://localhost:5134/api/v1/Amenities');
-            const data = await response.json();
-            setData(data);
+            const filter: any = {
+                name: keyword,
+                page: 1,
+                size: 5,
+                orderBy: 'name',
+                orderDirection: 0
+            };
+            const response: any = await axios.get('http://localhost:5134/api/v1/Amenities/search', { params: filter });
+            setData(response.data.items);
         } catch (error) {
             console.error('Error:', error);
         }
+    };
+
+    const onSearch = async (e: any) => {
+        debugger
+        e.preventDefault();
+        searchData();
     };
 
     return (
@@ -27,22 +41,28 @@ function AmenityList() {
                 <div className="card-header p-3">
                     <h1>Amenity Management</h1>
                 </div>
-                <div className="card-body p-3 border-y border-slate-300">
-                    Form Search
-                </div>
-                <div className="card-footer p-3 flex justify-between">
-                    <button type="button" className="p-2 px-4 bg-green-500 text-white hover:bg-green-700 rounded-full">
-                        <FontAwesomeIcon icon={faPlus} className="mr-2" /> Add
-                    </button>
-                    <div className="search-actions space-x-3">
-                        <button type="reset" className="p-2 px-4 bg-slate-300 text-white hover:bg-slate-500 rounded-full">
-                            <FontAwesomeIcon icon={faEraser} className="mr-2" /> Clear
-                        </button>
-                        <button type="submit" className="p-2 px-4 bg-blue-500 text-white hover:bg-blue-700 rounded-full">
-                            <FontAwesomeIcon icon={faSearch} className="mr-2" /> Search
-                        </button>
+                <form onSubmit={onSearch}>
+                    <div className="card-body p-3 border-y border-slate-300">
+                        <div className="form-group">
+                            <label htmlFor="name" className="block mb-3">Keyword</label>
+                            <input type="text" id="name" name="name" onChange={(e) => setKeyword(e.target.value)}
+                                className="p-2 border border-slate-300 rounded-sm w-full" />
+                        </div>
                     </div>
-                </div>
+                    <div className="card-footer p-3 flex justify-between">
+                        <button type="button" className="p-2 px-4 bg-green-500 text-white hover:bg-green-700 rounded-full">
+                            <FontAwesomeIcon icon={faPlus} className="mr-2" /> Add
+                        </button>
+                        <div className="search-actions space-x-3">
+                            <button type="reset" className="p-2 px-4 bg-slate-300 text-white hover:bg-slate-500 rounded-full">
+                                <FontAwesomeIcon icon={faEraser} className="mr-2" /> Clear
+                            </button>
+                            <button type="submit" className="p-2 px-4 bg-blue-500 text-white hover:bg-blue-700 rounded-full">
+                                <FontAwesomeIcon icon={faSearch} className="mr-2" /> Search
+                            </button>
+                        </div>
+                    </div>
+                </form>
             </div>
 
             {/* Table List With Paging */}
@@ -62,7 +82,7 @@ function AmenityList() {
                             </tr>
                         </thead>
                         <tbody>
-                            {data.map((item, index) => (
+                            {data.length !== 0 && data.map((item, index) => (
                                 <tr key={item.id} className="*:border *:border-slate-300 *:p-3">
                                     <td>{index + 1}</td>
                                     <td>{item.name}</td>
@@ -80,11 +100,21 @@ function AmenityList() {
                                     </td>
                                 </tr>
                             ))}
+                            {
+                                data.length === 0 && (
+                                    <tr>
+                                        <td colSpan={5} className="text-center">No data</td>
+                                    </tr>
+                                )
+                            }
                         </tbody>
                     </table>
                 </div>
                 <div className="card-footer p-3 flex justify-between">
-                    {/* Paging */}
+                    {/* Select page Size */}
+                    {/* List Page */}
+                    {/* Page Info */}
+                    {"1-10 of 100"}
                 </div>
             </div>
 
