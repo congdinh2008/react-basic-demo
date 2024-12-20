@@ -2,10 +2,13 @@ import { faEdit, faEraser, faPlus, faSearch, faTrash } from "@fortawesome/free-s
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import AmenityDetail from "./AmenityDetail";
 
 function AmenityList() {
     const [data, setData] = useState<any[]>([]);
     const [keyword, setKeyword] = useState<string>('');
+    const [isShowDetail, setIsShowDetail] = useState<boolean>(false);
+    const [selectedItem, setSelectedItem] = useState<any>(null);
 
     // Call API from BE => setData(response.data);
     useEffect(() => {
@@ -17,7 +20,7 @@ function AmenityList() {
             const filter: any = {
                 name: keyword,
                 page: 1,
-                size: 10,
+                size: 5,
                 orderBy: 'name',
                 orderDirection: 0
             };
@@ -35,7 +38,8 @@ function AmenityList() {
     };
 
     const onEdit = (item: any) => {
-        console.log('Edit:', item);
+        setSelectedItem(item);
+        setIsShowDetail(true);
     }
 
     const onDelete = async (item: any) => {
@@ -49,6 +53,11 @@ function AmenityList() {
         if (response.status === 200 && response.data) {
             searchData();
         }
+    };
+
+    const onCancelDetail = () => {
+        setIsShowDetail(false);
+        setSelectedItem(null);
     };
 
     return (
@@ -67,7 +76,7 @@ function AmenityList() {
                         </div>
                     </div>
                     <div className="card-footer p-3 flex justify-between">
-                        <button type="button" className="p-2 px-4 bg-green-500 text-white hover:bg-green-700 rounded-full">
+                        <button type="button" className="p-2 px-4 bg-green-500 text-white hover:bg-green-700 rounded-full" onClick={() => setIsShowDetail(true)}>
                             <FontAwesomeIcon icon={faPlus} className="mr-2" /> Add
                         </button>
                         <div className="search-actions space-x-3">
@@ -137,6 +146,8 @@ function AmenityList() {
 
 
             {/* Details Component */}
+            {isShowDetail && <AmenityDetail item={selectedItem} onCancel={() => onCancelDetail()} />}
+
         </section>
     );
 }
