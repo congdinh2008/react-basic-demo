@@ -17,7 +17,7 @@ function AmenityList() {
             const filter: any = {
                 name: keyword,
                 page: 1,
-                size: 5,
+                size: 10,
                 orderBy: 'name',
                 orderDirection: 0
             };
@@ -32,6 +32,23 @@ function AmenityList() {
         debugger
         e.preventDefault();
         searchData();
+    };
+
+    const onEdit = (item: any) => {
+        console.log('Edit:', item);
+    }
+
+    const onDelete = async (item: any) => {
+        let response: any;
+        try {
+            response = await axios.delete(`http://localhost:5134/api/v1/Amenities/${item.id}`);
+        } catch (error) {
+            console.error('Error:', error);
+        }
+
+        if (response.status === 200 && response.data) {
+            searchData();
+        }
     };
 
     return (
@@ -90,10 +107,10 @@ function AmenityList() {
                                     <td>{item.description}</td>
                                     <td>
                                         <div className="flex justify-center space-x-3">
-                                            <button type="button" title="Edit">
+                                            <button type="button" title="Edit" onClick={() => onEdit(item)}>
                                                 <FontAwesomeIcon icon={faEdit} className="text-blue-500" />
                                             </button>
-                                            <button type="button" title="Delete">
+                                            <button type="button" title="Delete" onClick={() => onDelete(item)}>
                                                 <FontAwesomeIcon icon={faTrash} className="text-red-500" />
                                             </button>
                                         </div>
