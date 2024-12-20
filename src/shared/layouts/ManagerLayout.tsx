@@ -8,7 +8,7 @@ function ManagerLayout({ children }: { children: React.ReactNode }) {
             <Header />
             <main className='flex-1 flex'>
                 <Sidebar />
-                <div className="main-content p-4">
+                <div className="main-content w-full p-4">
                     {children}
                 </div>
             </main>
