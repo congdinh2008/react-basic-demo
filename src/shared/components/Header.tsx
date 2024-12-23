@@ -23,10 +23,10 @@ function Header() {
             <div className="profile-menu">
                 <ul className="nav-menu flex justify-center">
                     <li className="nav-item">
-                        <Link to="/" className="nav-link block p-4 hover:bg-blue-700">Login</Link>
+                        <Link to="/auth/login" className="nav-link block p-4 hover:bg-blue-700">Login</Link>
                     </li>
                     <li className="nav-item">
-                        <Link to="/about" className="nav-link block p-4 hover:bg-blue-700">Register</Link>
+                        <Link to="/auth/register" className="nav-link block p-4 hover:bg-blue-700">Register</Link>
                     </li>
                 </ul>
             </div>
