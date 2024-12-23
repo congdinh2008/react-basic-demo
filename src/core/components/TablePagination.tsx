@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 
 interface TablePaginationProps {
     data: any[];
+    defaultOrderBy: string;
     pageInfo: any;
     columns: any[];
     onEdit: (item: any) => void;
@@ -11,10 +12,10 @@ interface TablePaginationProps {
     onSearch: (page: number, size: number, orderBy: string, orderDirection: number) => void;
 }
 
-const TablePagination: React.FC<TablePaginationProps> = ({ data, pageInfo, columns, onEdit, onDelete, onSearch }) => {
+const TablePagination: React.FC<TablePaginationProps> = ({ data, defaultOrderBy, pageInfo, columns, onEdit, onDelete, onSearch }) => {
     const [page, setPage] = useState<number>(1);
     const [size, setSize] = useState<number>(5);
-    const [orderBy, setOrderBy] = useState<string>('name');
+    const [orderBy, setOrderBy] = useState<string>(defaultOrderBy);
     const [orderDirection, setOrderDirection] = useState<number>(0);
     const [pageLimit, setPageLimit] = useState<number>(3);
     const [pageSizeList, setPageSizeList] = useState<number[]>([5, 10, 20, 50, 100]);

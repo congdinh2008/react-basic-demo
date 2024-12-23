@@ -7,6 +7,7 @@ import CustomerLayout from './shared/layouts/CustomerLayout';
 import ManagerLayout from './shared/layouts/ManagerLayout';
 import AdminDashboard from './pages/manager/AdminDashboard';
 import AmenityList from './pages/manager/amenity/AmenityList';
+import RoomList from './pages/manager/room/RoomList';
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
           {/* Admin Router */}
           <Route path="/manager/dashboard" element={<ManagerLayout><AdminDashboard /></ManagerLayout>} />
           <Route path="/manager/amenities" element={<ManagerLayout><AmenityList /></ManagerLayout>} />
+          <Route path="/manager/rooms" element={<ManagerLayout><RoomList /></ManagerLayout>} />
         </Routes>
       </div>
     </BrowserRouter>

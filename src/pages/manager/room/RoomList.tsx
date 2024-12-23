@@ -2,24 +2,26 @@ import { faEraser, faPlus, faSearch, faSortAlphaAsc, faSortAlphaDesc, faSortAmou
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
-import AmenityDetail from "./AmenityDetail";
+import RoomDetail from "./RoomDetail";
 import TablePagination from "../../../core/components/TablePagination";
 
-function AmenityList() {
+function RoomList() {
     const [data, setData] = useState<any[]>([]);
     const [keyword, setKeyword] = useState<string>('');
     const [isShowDetail, setIsShowDetail] = useState<boolean>(false);
     const [selectedItem, setSelectedItem] = useState<any>(null);
     const [page, setPage] = useState<number>(1);
     const [size, setSize] = useState<number>(5);
-    const [orderBy, setOrderBy] = useState<string>('name');
+    const [orderBy, setOrderBy] = useState<string>('number');
     const [orderDirection, setOrderDirection] = useState<number>(0);
     const [pageInfo, setPageInfo] = useState<any>({});
 
     const [columns, setColumns] = useState<any[]>([
-        { field: 'name', label: 'Name', iconASC: faSortAlphaAsc, iconDESC: faSortAlphaDesc },
-        { field: 'price', label: 'Price', iconASC: faSortAmountAsc, iconDESC: faSortAmountDesc },
-        { field: 'description', label: 'Description', iconASC: faSortAlphaAsc, iconDESC: faSortAlphaDesc },
+        { field: 'number', label: 'Number', iconASC: faSortAlphaAsc, iconDESC: faSortAlphaDesc },
+        { field: 'pricePerNight', label: 'Price', iconASC: faSortAmountAsc, iconDESC: faSortAmountDesc },
+        { field: 'capacity', label: 'Capacity', iconASC: faSortAlphaAsc, iconDESC: faSortAlphaDesc },
+        { field: 'type', label: 'Type', iconASC: faSortAlphaAsc, iconDESC: faSortAlphaDesc },
+        { field: 'status', label: 'Status', iconASC: faSortAlphaAsc, iconDESC: faSortAlphaDesc },
         { field: 'isActive', label: 'Active', iconASC: faSortAlphaAsc, iconDESC: faSortAlphaDesc },
     ]);
 
@@ -33,14 +35,13 @@ function AmenityList() {
     const searchData = async () => {
         try {
             const filter: any = {
-                name: keyword,
+                number: keyword,
                 page: page,
                 size: size,
                 orderBy: orderBy,
                 orderDirection: orderDirection
             };
-            const response: any = await axios.get('http://localhost:5134/api/v1/Amenities/search', { params: filter });
-            // http://localhost:5134/api/v1/Amenities/search?name=&page=1&size=10&orderBy=name&orderDirection=0
+            const response: any = await axios.get('http://localhost:5134/api/v1/rooms/search', { params: filter });
             setData(response.data.items);
             setPageInfo(response.data.pageInfo);
         } catch (error) {
@@ -81,7 +82,7 @@ function AmenityList() {
     const onDelete = async (item: any) => {
         let response: any;
         try {
-            response = await axios.delete(`http://localhost:5134/api/v1/Amenities/${item.id}`);
+            response = await axios.delete(`http://localhost:5134/api/v1/rooms/${item.id}`);
         } catch (error) {
             console.error('Error:', error);
         }
@@ -102,13 +103,13 @@ function AmenityList() {
             {/* Search */}
             <div className="card border border-slate-300 rounded-md">
                 <div className="card-header p-3">
-                    <h1 className="text-2xl font-semibold">Amenity Management</h1>
+                    <h1 className="text-2xl font-semibold">Room Management</h1>
                 </div>
                 <form onSubmit={handleSubmit}>
                     <div className="card-body p-3 border-y border-slate-300">
                         <div className="form-group">
-                            <label htmlFor="name" className="block mb-3">Keyword</label>
-                            <input type="text" id="name" name="name" onChange={(e) => setKeyword(e.target.value)}
+                            <label htmlFor="number" className="block mb-3">Keyword</label>
+                            <input type="text" id="number" name="number" onChange={(e) => setKeyword(e.target.value)}
                                 className="p-2 border border-slate-300 rounded-sm w-full" />
                         </div>
                     </div>
@@ -129,15 +130,15 @@ function AmenityList() {
             </div>
 
             {/* Table List With Paging */}
-            <TablePagination data={data} defaultOrderBy={'name'} pageInfo={pageInfo} columns={columns} onEdit={onEdit} onDelete={onDelete} onSearch={onSearch} />
+            <TablePagination data={data} defaultOrderBy={'number'} pageInfo={pageInfo} columns={columns} onEdit={onEdit} onDelete={onDelete} onSearch={onSearch} />
 
             {/* Details Component */}
             <div id="detail-form" ref={detailForm}>
-                {isShowDetail && (<AmenityDetail item={selectedItem} onCancel={() => onCancelDetail()} />)}
+                {isShowDetail && (<RoomDetail item={selectedItem} onCancel={() => onCancelDetail()} />)}
             </div>
 
         </section>
     );
 }
 
-export default AmenityList;
+export default RoomList;
