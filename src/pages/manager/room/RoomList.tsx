@@ -4,6 +4,9 @@ import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import RoomDetail from "./RoomDetail";
 import TablePagination from "../../../core/components/TablePagination";
+import { RoomService } from "../../../services/rooms.service";
+import { RoomType } from "../../../enums/room-type.enum";
+import { RoomStatus } from "../../../enums/room-status.enum";
 
 function RoomList() {
     const [data, setData] = useState<any[]>([]);
@@ -16,13 +19,13 @@ function RoomList() {
     const [orderDirection, setOrderDirection] = useState<number>(0);
     const [pageInfo, setPageInfo] = useState<any>({});
 
-    const [columns, setColumns] = useState<any[]>([
-        { field: 'number', label: 'Number', iconASC: faSortAlphaAsc, iconDESC: faSortAlphaDesc },
-        { field: 'pricePerNight', label: 'Price', iconASC: faSortAmountAsc, iconDESC: faSortAmountDesc },
-        { field: 'capacity', label: 'Capacity', iconASC: faSortAlphaAsc, iconDESC: faSortAlphaDesc },
-        { field: 'type', label: 'Type', iconASC: faSortAlphaAsc, iconDESC: faSortAlphaDesc },
-        { field: 'status', label: 'Status', iconASC: faSortAlphaAsc, iconDESC: faSortAlphaDesc },
-        { field: 'isActive', label: 'Active', iconASC: faSortAlphaAsc, iconDESC: faSortAlphaDesc },
+    const [columns] = useState<any[]>([
+        { field: 'number', label: 'Number', iconASC: faSortAlphaAsc, iconDESC: faSortAlphaDesc, isEnum: false, enum: null },
+        { field: 'pricePerNight', label: 'Price', iconASC: faSortAmountAsc, iconDESC: faSortAmountDesc, isEnum: false, enum: null },
+        { field: 'capacity', label: 'Capacity', iconASC: faSortAlphaAsc, iconDESC: faSortAlphaDesc, isEnum: false, enum: null },
+        { field: 'type', label: 'Type', iconASC: faSortAlphaAsc, iconDESC: faSortAlphaDesc, isEnum: true, enum: RoomType },
+        { field: 'status', label: 'Status', iconASC: faSortAlphaAsc, iconDESC: faSortAlphaDesc, isEnum: true, enum: RoomStatus },
+        { field: 'isActive', label: 'Active', iconASC: faSortAlphaAsc, iconDESC: faSortAlphaDesc, isEnum: false, enum: null },
     ]);
 
     const detailForm = useRef<HTMLDivElement>(null);
@@ -80,15 +83,16 @@ function RoomList() {
     }
 
     const onDelete = async (item: any) => {
-        let response: any;
         try {
-            response = await axios.delete(`http://localhost:5134/api/v1/rooms/${item.id}`);
+            const response = await RoomService.remove(item.id);
+
+            if (response) {
+                searchData();
+            } else {
+                console.error('Error:', response);
+            }
         } catch (error) {
             console.error('Error:', error);
-        }
-
-        if (response.status === 200 && response.data) {
-            searchData();
         }
     };
 

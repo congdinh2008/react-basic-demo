@@ -1,6 +1,8 @@
 import { faEdit, faTrash, faAngleDoubleLeft, faAngleDoubleRight, faAngleLeft, faAngleRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
+import { EnumHelper } from "../../helpers/enum.helper";
+import { RoomType } from "../../enums/room-type.enum";
 
 interface TablePaginationProps {
     data: any[];
@@ -17,12 +19,12 @@ const TablePagination: React.FC<TablePaginationProps> = ({ data, defaultOrderBy,
     const [size, setSize] = useState<number>(5);
     const [orderBy, setOrderBy] = useState<string>(defaultOrderBy);
     const [orderDirection, setOrderDirection] = useState<number>(0);
-    const [pageLimit, setPageLimit] = useState<number>(3);
-    const [pageSizeList, setPageSizeList] = useState<number[]>([5, 10, 20, 50, 100]);
+    const [pageLimit] = useState<number>(3);
+    const [pageSizeList] = useState<number[]>([5, 10, 20, 50, 100]);
 
     useEffect(() => {
         onSearch(page, size, orderBy, orderDirection);
-    }, [size, page, orderBy, orderDirection]);
+    }, [size, page, orderBy, orderDirection, onSearch]);
 
     const calculatePage = () => {
         let start: number = Math.max(1, page - pageLimit);
@@ -68,7 +70,7 @@ const TablePagination: React.FC<TablePaginationProps> = ({ data, defaultOrderBy,
                                 </td>
                                 {columns.map((column: any) => (
                                     <td key={column.field}>
-                                        {column.field === 'isActive' ? (item[column.field] ? 'Yes' : 'No') : item[column.field]}
+                                        {column.field === 'isActive' ? (item[column.field] ? 'Yes' : 'No') : column.isEnum ? EnumHelper.getDisplayValue(column.enum, item[column.field]) : item[column.field]}
                                     </td>
                                 ))}
                                 <td>

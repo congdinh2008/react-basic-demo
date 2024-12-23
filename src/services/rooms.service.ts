@@ -1,7 +1,7 @@
 import axios, { AxiosInstance } from "axios";
 
 const api: AxiosInstance = axios.create({
-    baseURL: process.env.REACT_APP_API_URL + 'amenities'
+    baseURL: process.env.REACT_APP_API_URL + 'rooms'
 });
 
 const getAll = async () => {
@@ -58,7 +58,7 @@ const remove = async (id: string) => {
     }
 }
 
-export const AmenityService = {
+export const RoomService = {
     getAll,
     getById,
     search,

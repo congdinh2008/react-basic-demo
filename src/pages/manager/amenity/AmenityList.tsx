@@ -20,7 +20,7 @@ function AmenityList() {
     const [loading, setLoading] = useState(true);
 
 
-    const [columns, setColumns] = useState<any[]>([
+    const [columns] = useState<any[]>([
         { field: 'name', label: 'Name', iconASC: faSortAlphaAsc, iconDESC: faSortAlphaDesc },
         { field: 'price', label: 'Price', iconASC: faSortAmountAsc, iconDESC: faSortAmountDesc },
         { field: 'description', label: 'Description', iconASC: faSortAlphaAsc, iconDESC: faSortAlphaDesc },
