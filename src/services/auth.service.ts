@@ -1,12 +1,7 @@
-import axios, { AxiosInstance } from "axios";
-
-const api: AxiosInstance = axios.create({
-    baseURL: process.env.REACT_APP_API_URL + 'auth'
-});
-
+import api from "./api.service";
 
 const login = async (data: any) => {
-    const response = await api.post('/login', data);
+    const response = await api.post('/auth/login', data);
 
     if (response) {
         localStorage.setItem('token', response.data.token);
@@ -17,7 +12,7 @@ const login = async (data: any) => {
 }
 
 const register = async (data: any) => {
-    const response = await api.post('/register', data);
+    const response = await api.post('/auth/register', data);
     return response;
 }
 

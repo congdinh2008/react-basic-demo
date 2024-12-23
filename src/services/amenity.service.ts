@@ -1,12 +1,8 @@
-import axios, { AxiosInstance } from "axios";
-
-const api: AxiosInstance = axios.create({
-    baseURL: process.env.REACT_APP_API_URL + 'amenities'
-});
+import api from "./api.service";
 
 const getAll = async () => {
     try {
-        const response = await api.get('/');
+        const response = await api.get('/amenities');
         return response.data;
     } catch (error) {
         console.log('Error:', error);
@@ -15,7 +11,7 @@ const getAll = async () => {
 
 const getById = async (id: string) => {
     try {
-        const response: any = await api.get(`/${id}`);
+        const response: any = await api.get(`/amenities/${id}`);
         return response.data;
     } catch (error) {
         console.log('Error:', error);
@@ -24,7 +20,7 @@ const getById = async (id: string) => {
 
 const search = async (filter: any) => {
     try {
-        const response: any = await api.get('/search', { params: filter });
+        const response: any = await api.get('/amenities/search', { params: filter });
         return response.data;
     } catch (error) {
         console.log('Error:', error);
@@ -33,7 +29,7 @@ const search = async (filter: any) => {
 
 const create = async (data: any) => {
     try {
-        const response: any = await api.post('/', data);
+        const response: any = await api.post('/amenities', data);
         return response.data;
     } catch (error) {
         console.log('Error:', error);
@@ -42,7 +38,7 @@ const create = async (data: any) => {
 
 const update = async (id: string, data: any) => {
     try {
-        const response: any = await api.put(`/${id}`, data);
+        const response: any = await api.put(`/amenities/${id}`, data);
         return response.data;
     } catch (error) {
         console.log('Error:', error);
@@ -51,7 +47,7 @@ const update = async (id: string, data: any) => {
 
 const remove = async (id: string) => {
     try {
-        const response: any = await api.delete<boolean>(`/${id}`);
+        const response: any = await api.delete<boolean>(`/amenities/${id}`);
         return response.data;
     } catch (error) {
         console.log('Error:', error);
