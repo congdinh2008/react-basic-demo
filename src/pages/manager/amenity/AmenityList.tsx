@@ -1,8 +1,9 @@
-import { faAngleDoubleLeft, faAngleDoubleRight, faAngleDown, faAngleLeft, faAngleRight, faAngleUp, faEdit, faEraser, faPlus, faSearch, faSort, faSortAlphaAsc, faSortAlphaDesc, faSortAmountAsc, faSortAmountDesc, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faAngleDoubleLeft, faAngleDoubleRight, faAngleLeft, faAngleRight, faEdit, faEraser, faPlus, faSearch, faSortAlphaAsc, faSortAlphaDesc, faSortAmountAsc, faSortAmountDesc, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import AmenityDetail from "./AmenityDetail";
+import TablePagination from "../../../core/components/TablePagination";
 
 function AmenityList() {
     const [data, setData] = useState<any[]>([]);
@@ -10,11 +11,19 @@ function AmenityList() {
     const [isShowDetail, setIsShowDetail] = useState<boolean>(false);
     const [selectedItem, setSelectedItem] = useState<any>(null);
     const [page, setPage] = useState<number>(1);
-    const [size, setSize] = useState<number>(10);
+    const [size, setSize] = useState<number>(5);
     const [orderBy, setOrderBy] = useState<string>('name');
     const [orderDirection, setOrderDirection] = useState<number>(0);
     const [pageInfo, setPageInfo] = useState<any>({});
     const [pageLimit, setPageLimit] = useState<number>(3);
+    const [pageSizeList, setPageSizeList] = useState<number[]>([5, 10, 20, 50, 100]);
+    // 3 pages before and after current page - 
+    // current page = 1 => 1 2 3 4
+    // current page = 2 => 1 2 3 4 5
+    // current page = 3 => 1 2 3 4 5 6
+    // current page = 4 => 1 2 3 4 5 6 7
+    // current page = 5 => 2 3 4 5 6 7 8
+    // current page = 8 => 5 6 7 8
 
     // Call API from BE => setData(response.data);
     useEffect(() => {
@@ -31,6 +40,7 @@ function AmenityList() {
                 orderDirection: orderDirection
             };
             const response: any = await axios.get('http://localhost:5134/api/v1/Amenities/search', { params: filter });
+            // http://localhost:5134/api/v1/Amenities/search?name=&page=1&size=10&orderBy=name&orderDirection=0
             setData(response.data.items);
             setPageInfo(response.data.pageInfo);
         } catch (error) {
@@ -87,6 +97,11 @@ function AmenityList() {
             pageList.push(i);
         }
         return pageList;
+        // 1 => 1,2,3,4
+        // 2 => 1,2,3,4,5
+        // 3 => 1,2,3,4,5,6
+        // 4 => 1,2,3,4,5,6,7
+        // 5 => 2,3,4,5,6,7,8
     }
 
     const orderByField = (field: string) => {
@@ -197,9 +212,9 @@ function AmenityList() {
                         <label htmlFor="pageSize" className="block mr-2">Items per page: </label>
                         <select name="pageSize" id="pageSize" onChange={(e) => setSize(parseInt(e.target.value))} value={size} title="Select Page Size"
                             className="p-2 border border-slate-300 rounded-sm">
-                            <option value="5">5</option>
-                            <option value="10">10</option>
-                            <option value="20">20</option>
+                            {pageSizeList.map((item) => (
+                                <option key={item} value={item}>{item}</option>
+                            ))}
                         </select>
                     </div>
                     {/* List Page */}
