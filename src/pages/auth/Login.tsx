@@ -1,9 +1,11 @@
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import * as Yup from 'yup';
-import { AuthService } from '../../services/auth.service';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../contexts/auth.context';
+import { AuthService } from '../../services/auth.service';
 
 const Login = () => {
+    const {login} = useAuth();
     const navigate = useNavigate();
     const initialValues = {
         username: '',
@@ -22,7 +24,7 @@ const Login = () => {
         try {
             const response = await AuthService.login(values);
             if (response) {
-                console.log('Login success');
+                login(response);
                 navigate('/');
             } else {
                 console.log('Login failed');
