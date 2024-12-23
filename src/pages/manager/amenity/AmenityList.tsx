@@ -1,4 +1,4 @@
-import { faAngleDoubleLeft, faAngleDoubleRight, faAngleLeft, faAngleRight, faEdit, faEraser, faPlus, faSearch, faSortAlphaAsc, faSortAlphaDesc, faSortAmountAsc, faSortAmountDesc, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faEraser, faPlus, faSearch, faSortAlphaAsc, faSortAlphaDesc, faSortAmountAsc, faSortAmountDesc } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 import { useEffect, useState } from "react";
@@ -15,15 +15,13 @@ function AmenityList() {
     const [orderBy, setOrderBy] = useState<string>('name');
     const [orderDirection, setOrderDirection] = useState<number>(0);
     const [pageInfo, setPageInfo] = useState<any>({});
-    const [pageLimit, setPageLimit] = useState<number>(3);
-    const [pageSizeList, setPageSizeList] = useState<number[]>([5, 10, 20, 50, 100]);
-    // 3 pages before and after current page - 
-    // current page = 1 => 1 2 3 4
-    // current page = 2 => 1 2 3 4 5
-    // current page = 3 => 1 2 3 4 5 6
-    // current page = 4 => 1 2 3 4 5 6 7
-    // current page = 5 => 2 3 4 5 6 7 8
-    // current page = 8 => 5 6 7 8
+
+    const [columns, setColumns] = useState<any[]>([
+        { field: 'name', label: 'Name', iconASC: faSortAlphaAsc, iconDESC: faSortAlphaDesc },
+        { field: 'price', label: 'Price', iconASC: faSortAmountAsc, iconDESC: faSortAmountDesc },
+        { field: 'description', label: 'Description', iconASC: faSortAlphaAsc, iconDESC: faSortAlphaDesc },
+        { field: 'isActive', label: 'Active', iconASC: faSortAlphaAsc, iconDESC: faSortAlphaDesc },
+    ]);
 
     // Call API from BE => setData(response.data);
     useEffect(() => {
@@ -48,10 +46,17 @@ function AmenityList() {
         }
     };
 
-    const onSearch = async (e: any) => {
+    const handleSubmit = async (e: any) => {
         e.preventDefault();
         searchData();
     };
+
+    const onSearch = (page: number, size: number, orderBy: string, orderDirection: number) => {
+        setPage(page);
+        setSize(size);
+        setOrderBy(orderBy);
+        setOrderDirection(orderDirection);
+    }
 
     const onCreate = () => {
         setIsShowDetail(false);
@@ -88,27 +93,6 @@ function AmenityList() {
         searchData();
     };
 
-    const calculatePage = () => {
-        let start: number = Math.max(1, page - pageLimit);
-        let end: number = Math.min(pageInfo.totalPages, page + pageLimit);
-
-        const pageList: number[] = [];
-        for (let i = start; i <= end; i++) {
-            pageList.push(i);
-        }
-        return pageList;
-        // 1 => 1,2,3,4
-        // 2 => 1,2,3,4,5
-        // 3 => 1,2,3,4,5,6
-        // 4 => 1,2,3,4,5,6,7
-        // 5 => 2,3,4,5,6,7,8
-    }
-
-    const orderByField = (field: string) => {
-        setOrderBy(field);
-        setOrderDirection(orderBy === field && orderDirection === 1 ? 0 : 1);
-    }
-
     return (
         <section className="w-full">
             {/* Search */}
@@ -116,7 +100,7 @@ function AmenityList() {
                 <div className="card-header p-3">
                     <h1 className="text-2xl font-semibold">Amenity Management</h1>
                 </div>
-                <form onSubmit={onSearch}>
+                <form onSubmit={handleSubmit}>
                     <div className="card-body p-3 border-y border-slate-300">
                         <div className="form-group">
                             <label htmlFor="name" className="block mb-3">Keyword</label>
@@ -141,116 +125,7 @@ function AmenityList() {
             </div>
 
             {/* Table List With Paging */}
-            <div className="card border border-slate-300 rounded-md my-4">
-                <div className="card-body p-3 border-y border-slate-300">
-                    <table className="w-full">
-                        <thead>
-                            <tr className="*:border *:border-slate-300 *:p-3">
-                                <th>No</th>
-                                <th>
-                                    <button type="button" onClick={() => orderByField('name')}>
-                                        Name
-                                        <FontAwesomeIcon icon={orderDirection === 1 && orderBy === 'name' ? faSortAlphaDesc : faSortAlphaAsc} className="ml-2" />
-                                    </button>
-                                </th>
-                                <th>
-                                    <button type="button" onClick={() => orderByField('price')}>
-                                        Price
-                                        <FontAwesomeIcon icon={orderDirection === 1 && orderBy === 'price' ? faSortAmountAsc : faSortAmountDesc} className="ml-2" />
-                                    </button>
-                                </th>
-                                <th>
-                                    <button type="button" onClick={() => orderByField('description')}>
-                                        Description
-                                        <FontAwesomeIcon icon={orderDirection === 1 && orderBy === 'description' ? faSortAlphaDesc : faSortAlphaAsc} className="ml-2" />
-                                    </button>
-                                </th>
-                                <th>
-                                    <button type="button" onClick={() => orderByField('isActive')}>
-                                        Active
-                                        <FontAwesomeIcon icon={orderDirection === 1 && orderBy === 'isActive' ? faSortAmountAsc : faSortAmountDesc} className="ml-2" />
-                                    </button>
-                                </th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {data.length !== 0 && data.map((item, index) => (
-                                <tr key={item.id} className="*:border *:border-slate-300 *:p-3">
-                                    <td>
-                                        {pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1}
-                                    </td>
-                                    <td>{item.name}</td>
-                                    <td>{item.price}</td>
-                                    <td>{item.description}</td>
-                                    <td>{item.isActive ? 'Yes' : 'No'}</td>
-                                    <td>
-                                        <div className="flex justify-center space-x-3">
-                                            <button type="button" title="Edit" onClick={() => onEdit(item)}>
-                                                <FontAwesomeIcon icon={faEdit} className="text-blue-500" />
-                                            </button>
-                                            <button type="button" title="Delete" onClick={() => onDelete(item)}>
-                                                <FontAwesomeIcon icon={faTrash} className="text-red-500" />
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))}
-                            {
-                                data.length === 0 && (
-                                    <tr>
-                                        <td colSpan={5} className="text-2xl font-bold text-center">No data</td>
-                                    </tr>
-                                )
-                            }
-                        </tbody>
-                    </table>
-                </div>
-                <div className="card-footer p-3 flex justify-between">
-                    {/* Select page Size */}
-                    <div className="select-page-size flex items-center">
-                        <label htmlFor="pageSize" className="block mr-2">Items per page: </label>
-                        <select name="pageSize" id="pageSize" onChange={(e) => setSize(parseInt(e.target.value))} value={size} title="Select Page Size"
-                            className="p-2 border border-slate-300 rounded-sm">
-                            {pageSizeList.map((item) => (
-                                <option key={item} value={item}>{item}</option>
-                            ))}
-                        </select>
-                    </div>
-                    {/* List Page */}
-                    <div className="list-page flex items-center space-x-3">
-                        <button type="button" disabled={page === 1} onClick={() => setPage(1)} title="First Page"
-                            className={`w-8 h-8 flex justify-center items-center rounded-full border border-slate-300 ${page === 1 ? 'cursor-not-allowed' : ''}`}>
-                            <FontAwesomeIcon icon={faAngleDoubleLeft} className={page === 1 ? 'text-slate-400' : 'text-blue-500'} />
-                        </button>
-                        <button type="button" disabled={page === 1} onClick={() => setPage(page - 1)} title="Previous Page"
-                            className={`w-8 h-8 flex justify-center items-center rounded-full border border-slate-300 ${page === 1 ? 'cursor-not-allowed' : ''}`}>
-                            <FontAwesomeIcon icon={faAngleLeft} className={page === 1 ? 'text-slate-400' : 'text-blue-500'} />
-                        </button>
-
-                        {calculatePage().map((item) => (
-                            <button key={item} type="button" onClick={() => setPage(item)} title={`Page ${item}`}
-                                className={`w-8 h-8 flex justify-center items-center rounded-full border border-slate-300 text-blue-500 ${page === item ? 'bg-blue-500 text-white' : ''}`}>
-                                {item}
-                            </button>))}
-
-                        <button type="button" disabled={page === pageInfo.totalPages} onClick={() => setPage(page + 1)} title="Next Page"
-                            className={`w-8 h-8 flex justify-center items-center rounded-full border border-slate-300 ${page === pageInfo.totalPages ? 'cursor-not-allowed' : ''}`}>
-                            <FontAwesomeIcon icon={faAngleRight} className={page === pageInfo.totalPages ? 'text-slate-400' : 'text-blue-500'} />
-                        </button>
-                        <button type="button" disabled={page === pageInfo.totalPages} onClick={() => setPage(pageInfo.totalPages)} title="Last Page"
-                            className={`w-8 h-8 flex justify-center items-center rounded-full border border-slate-300 ${page === pageInfo.totalPages ? 'cursor-not-allowed' : ''}`}>
-                            <FontAwesomeIcon icon={faAngleDoubleRight} className={page === pageInfo.totalPages ? 'text-slate-400' : 'text-blue-500'} />
-                        </button>
-                    </div>
-                    {/* Page Info */}
-                    <div className="page-info">
-                        {/* 21-27 of 27 */}
-                        {pageInfo && `${pageInfo.pageSize * (pageInfo.pageIndex - 1) + 1}-${Math.min(pageInfo.pageSize * pageInfo.pageIndex, pageInfo.totalItems)} of ${pageInfo.totalItems}`}
-                    </div>
-                </div>
-            </div>
-
+            <TablePagination data={data} pageInfo={pageInfo} columns={columns} onEdit={onEdit} onDelete={onDelete} onSearch={onSearch} />
 
             {/* Details Component */}
             {isShowDetail && (<AmenityDetail item={selectedItem} onCancel={() => onCancelDetail()} />)}
