@@ -1,14 +1,17 @@
 import { faEraser, faPlus, faSearch, faSortAlphaAsc, faSortAlphaDesc, faSortAmountAsc, faSortAmountDesc } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import AmenityDetail from "./AmenityDetail";
 import TablePagination from "../../../core/components/TablePagination";
 import { AmenityService } from "../../../services/amenity.service";
 import Loading from "../../../core/components/Loading";
-// import { useQuery } from "react-query";
+import { FilterModel } from "../../../models/filter.model";
+import { TableColumnModel } from "../../../models/table-column.model";
+import { AmenityViewModel } from "../../../view-models/amenity/amenity.view-model";
+import { PageInfo } from "../../../models/page-info.model";
 
 function AmenityList() {
-    const [data, setData] = useState<any[]>([]);
+    const [data, setData] = useState<AmenityViewModel[]>([]);
     const [keyword, setKeyword] = useState<string>('');
     const [isShowDetail, setIsShowDetail] = useState<boolean>(false);
     const [selectedItem, setSelectedItem] = useState<any>(null);
@@ -16,58 +19,45 @@ function AmenityList() {
     const [size, setSize] = useState<number>(5);
     const [orderBy, setOrderBy] = useState<string>('name');
     const [orderDirection, setOrderDirection] = useState<number>(0);
-    const [pageInfo, setPageInfo] = useState<any>({});
+    const [pageInfo, setPageInfo] = useState<PageInfo>(new PageInfo());
     const [loading, setLoading] = useState(true);
 
-
-    const [columns] = useState<any[]>([
-        { field: 'name', label: 'Name', iconASC: faSortAlphaAsc, iconDESC: faSortAlphaDesc },
-        { field: 'price', label: 'Price', iconASC: faSortAmountAsc, iconDESC: faSortAmountDesc },
-        { field: 'description', label: 'Description', iconASC: faSortAlphaAsc, iconDESC: faSortAlphaDesc },
-        { field: 'isActive', label: 'Active', iconASC: faSortAlphaAsc, iconDESC: faSortAlphaDesc },
+    const [columns] = useState<TableColumnModel[]>([
+        { field: 'name', label: 'Name', iconASC: faSortAlphaAsc, iconDESC: faSortAlphaDesc, isEnum: false, enum: null, sortabled: true },
+        { field: 'price', label: 'Price', iconASC: faSortAmountAsc, iconDESC: faSortAmountDesc, isEnum: false, enum: null, sortabled: true },
+        { field: 'description', label: 'Description', iconASC: faSortAlphaAsc, iconDESC: faSortAlphaDesc, isEnum: false, enum: null, sortabled: true },
+        { field: 'isActive', label: 'Active', iconASC: faSortAlphaAsc, iconDESC: faSortAlphaDesc, isEnum: false, enum: null, sortabled: true },
     ]);
 
     const detailForm = useRef<HTMLDivElement>(null);
 
-    // Call API from BE => setData(response.data);
-    useEffect(() => {
-        searchData();
-    }, [size, page, orderBy, orderDirection]);
-
-    const searchData = async () => {
+    const searchData = useCallback(async () => {
         try {
-            const filter: any = {
-                name: keyword,
+            const filter: FilterModel = {
                 page: page,
                 size: size,
                 orderBy: orderBy,
                 orderDirection: orderDirection
             };
+
+            if (keyword) {
+                Object.assign(filter, { name: keyword });
+            }
+
             const response: any = await AmenityService.search(filter);
+
             if (response) {
                 setInterval(() => {
                     setLoading(false);
                 }, 0);
             }
+
             setData(response.items);
             setPageInfo(response.pageInfo);
         } catch (error) {
             console.error('Error:', error);
         }
-    };
-
-    // const fetchData = async() =>{
-    //     const filter: any = {
-    //         name: keyword,
-    //         page: page,
-    //         size: size,
-    //         orderBy: orderBy,
-    //         orderDirection: orderDirection
-    //     };
-    //     return await AmenityService.search(filter);
-    // }
-
-    // const { dataQuery } = useQuery('apiData',  fetchData());
+    }, [page, size, orderBy, orderDirection, keyword]);
 
     const handleSubmit = async (e: any) => {
         e.preventDefault();
@@ -86,9 +76,9 @@ function AmenityList() {
         setSelectedItem(null);
         setTimeout(() => {
             setIsShowDetail(true);
+            // Auto focus on detail form
+            detailForm.current?.scrollIntoView({ behavior: 'smooth' });
         });
-        // Auto focus on detail form
-        detailForm.current?.scrollIntoView({ behavior: 'smooth' });
     };
 
     const onEdit = (item: any) => {
@@ -96,6 +86,8 @@ function AmenityList() {
         setSelectedItem(item);
         setTimeout(() => {
             setIsShowDetail(true);
+            // Auto focus on detail form
+            detailForm.current?.scrollIntoView({ behavior: 'smooth' });
         });
     }
 
@@ -117,6 +109,11 @@ function AmenityList() {
         setSelectedItem(null);
         searchData();
     };
+
+    // Call API from BE => setData(response.data);
+    useEffect(() => {
+        searchData();
+    }, [size, page, orderBy, orderDirection, searchData]);
 
     if (loading) return <Loading />;
 

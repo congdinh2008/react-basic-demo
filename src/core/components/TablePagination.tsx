@@ -2,12 +2,12 @@ import { faEdit, faTrash, faAngleDoubleLeft, faAngleDoubleRight, faAngleLeft, fa
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
 import { EnumHelper } from "../../helpers/enum.helper";
-import { RoomType } from "../../enums/room-type.enum";
+import { PageInfo } from "../../models/page-info.model";
 
 interface TablePaginationProps {
     data: any[];
     defaultOrderBy: string;
-    pageInfo: any;
+    pageInfo: PageInfo;
     columns: any[];
     onEdit: (item: any) => void;
     onDelete: (item: any) => void;
@@ -52,10 +52,12 @@ const TablePagination: React.FC<TablePaginationProps> = ({ data, defaultOrderBy,
                             {
                                 columns.map((column: any) => (
                                     <th key={column.field}>
-                                        <button type="button" onClick={() => orderByField(column.field)}>
-                                            {column.label}
-                                            <FontAwesomeIcon icon={orderDirection === 1 && orderBy === column.field ? column.iconASC : column.iconDESC} className="ml-2" />
-                                        </button>
+                                        {column.sortabled ? (
+                                            <button type="button" onClick={() => orderByField(column.field)}>
+                                                {column.label}
+                                                <FontAwesomeIcon icon={orderDirection === 1 && orderBy === column.field ? column.iconASC : column.iconDESC} className="ml-2" />
+                                            </button>) : column.label
+                                        }
                                     </th>
                                 ))
                             }

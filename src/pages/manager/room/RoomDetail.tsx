@@ -2,13 +2,13 @@ import { faEraser, faRotateLeft, faSearch } from "@fortawesome/free-solid-svg-ic
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { useEffect } from "react";
 import { RoomService } from "../../../services/rooms.service";
 import { RoomType } from "../../../enums/room-type.enum";
 import { EnumHelper } from "../../../helpers/enum.helper";
 import { RoomStatus } from "../../../enums/room-status.enum";
+import { RoomViewModel } from "../../../view-models/room/room.view-model";
 
-function RoomDetail({ item, onCancel }: { item: any, onCancel: any }) {
+function RoomDetail({ item, onCancel }: { item: RoomViewModel, onCancel: any }) {
     const formik = useFormik({
         initialValues: {
             number: item ? item.number : '',
@@ -31,9 +31,6 @@ function RoomDetail({ item, onCancel }: { item: any, onCancel: any }) {
         onSubmit: async (values) => {
             let response: any;
             // Convert string to number
-            values.type = parseInt(values.type);
-            values.status = parseInt(values.status);
-
             if (item) {
                 response = await RoomService.update(item.id, values);
             } else {
@@ -47,13 +44,6 @@ function RoomDetail({ item, onCancel }: { item: any, onCancel: any }) {
             }
         }
     });
-
-    // Call API from BE => setData(response.data);
-    useEffect(() => {
-        if (item) {
-            formik.setValues(item);
-        }
-    }, []);
 
     return (
         <div className="w-full mb-64">

@@ -2,10 +2,10 @@ import { faEraser, faRotateLeft, faSearch } from "@fortawesome/free-solid-svg-ic
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { useEffect } from "react";
 import { AmenityService } from "../../../services/amenity.service";
+import { AmenityViewModel } from "../../../view-models/amenity/amenity.view-model";
 
-function AmenityDetail({ item, onCancel }: { item: any, onCancel: any }) {
+function AmenityDetail({ item, onCancel }: { item: AmenityViewModel, onCancel: any }) {
 
     const formik = useFormik({
         initialValues: {
@@ -38,13 +38,6 @@ function AmenityDetail({ item, onCancel }: { item: any, onCancel: any }) {
             }
         }
     });
-
-    // Call API from BE => setData(response.data);
-    useEffect(() => {
-        if (item) {
-            formik.setValues(item);
-        }
-    }, []);
 
     return (
         <div className="w-full mb-64">

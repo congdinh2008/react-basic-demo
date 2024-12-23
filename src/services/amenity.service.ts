@@ -6,7 +6,7 @@ const api: AxiosInstance = axios.create({
 
 const getAll = async () => {
     try {
-        const response: any = await api.get('/');
+        const response = await api.get('/');
         return response.data;
     } catch (error) {
         console.log('Error:', error);
@@ -51,7 +51,7 @@ const update = async (id: string, data: any) => {
 
 const remove = async (id: string) => {
     try {
-        const response: any = await api.delete(`/${id}`);
+        const response: any = await api.delete<boolean>(`/${id}`);
         return response.data;
     } catch (error) {
         console.log('Error:', error);

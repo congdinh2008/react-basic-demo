@@ -1,12 +1,13 @@
 import { faEraser, faPlus, faSearch, faSortAlphaAsc, faSortAlphaDesc, faSortAmountAsc, faSortAmountDesc } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import axios from "axios";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import RoomDetail from "./RoomDetail";
 import TablePagination from "../../../core/components/TablePagination";
 import { RoomService } from "../../../services/rooms.service";
 import { RoomType } from "../../../enums/room-type.enum";
 import { RoomStatus } from "../../../enums/room-status.enum";
+import { FilterModel } from "../../../models/filter.model";
+import { TableColumnModel } from "../../../models/table-column.model";
 
 function RoomList() {
     const [data, setData] = useState<any[]>([]);
@@ -19,38 +20,38 @@ function RoomList() {
     const [orderDirection, setOrderDirection] = useState<number>(0);
     const [pageInfo, setPageInfo] = useState<any>({});
 
-    const [columns] = useState<any[]>([
-        { field: 'number', label: 'Number', iconASC: faSortAlphaAsc, iconDESC: faSortAlphaDesc, isEnum: false, enum: null },
-        { field: 'pricePerNight', label: 'Price', iconASC: faSortAmountAsc, iconDESC: faSortAmountDesc, isEnum: false, enum: null },
-        { field: 'capacity', label: 'Capacity', iconASC: faSortAlphaAsc, iconDESC: faSortAlphaDesc, isEnum: false, enum: null },
-        { field: 'type', label: 'Type', iconASC: faSortAlphaAsc, iconDESC: faSortAlphaDesc, isEnum: true, enum: RoomType },
-        { field: 'status', label: 'Status', iconASC: faSortAlphaAsc, iconDESC: faSortAlphaDesc, isEnum: true, enum: RoomStatus },
-        { field: 'isActive', label: 'Active', iconASC: faSortAlphaAsc, iconDESC: faSortAlphaDesc, isEnum: false, enum: null },
+    const [columns] = useState<TableColumnModel[]>([
+        { field: 'number', label: 'Number', iconASC: faSortAlphaAsc, iconDESC: faSortAlphaDesc, isEnum: false, enum: null, sortabled: true },
+        { field: 'pricePerNight', label: 'Price', iconASC: faSortAmountAsc, iconDESC: faSortAmountDesc, isEnum: false, enum: null, sortabled: true },
+        { field: 'capacity', label: 'Capacity', iconASC: faSortAlphaAsc, iconDESC: faSortAlphaDesc, isEnum: false, enum: null, sortabled: true },
+        { field: 'type', label: 'Type', iconASC: faSortAlphaAsc, iconDESC: faSortAlphaDesc, isEnum: true, enum: RoomType, sortabled: true },
+        { field: 'status', label: 'Status', iconASC: faSortAlphaAsc, iconDESC: faSortAlphaDesc, isEnum: true, enum: RoomStatus, sortabled: true },
+        { field: 'isActive', label: 'Active', iconASC: faSortAlphaAsc, iconDESC: faSortAlphaDesc, isEnum: false, enum: null, sortabled: true },
     ]);
 
     const detailForm = useRef<HTMLDivElement>(null);
 
-    // Call API from BE => setData(response.data);
-    useEffect(() => {
-        searchData();
-    }, [size, page, orderBy, orderDirection]);
-
-    const searchData = async () => {
+    const searchData = useCallback(async () => {
         try {
-            const filter: any = {
-                number: keyword,
+            const filter: FilterModel = {
                 page: page,
                 size: size,
                 orderBy: orderBy,
                 orderDirection: orderDirection
             };
-            const response: any = await axios.get('http://localhost:5134/api/v1/rooms/search', { params: filter });
-            setData(response.data.items);
-            setPageInfo(response.data.pageInfo);
+
+            if (keyword) {
+                Object.assign(filter, { number: keyword });
+            }
+
+            const response: any = await RoomService.search(filter);
+
+            setData(response.items);
+            setPageInfo(response.pageInfo);
         } catch (error) {
             console.error('Error:', error);
         }
-    };
+    }, [page, size, orderBy, orderDirection, keyword]);
 
     const handleSubmit = async (e: any) => {
         e.preventDefault();
@@ -69,9 +70,10 @@ function RoomList() {
         setSelectedItem(null);
         setTimeout(() => {
             setIsShowDetail(true);
+            // Auto focus on detail form
+            detailForm.current?.scrollIntoView({ behavior: 'smooth' });
         });
-        // Auto focus on detail form
-        detailForm.current?.scrollIntoView({ behavior: 'smooth' });
+
     };
 
     const onEdit = (item: any) => {
@@ -79,6 +81,8 @@ function RoomList() {
         setSelectedItem(item);
         setTimeout(() => {
             setIsShowDetail(true);
+            // Auto focus on detail form
+            detailForm.current?.scrollIntoView({ behavior: 'smooth' });
         });
     }
 
@@ -101,6 +105,11 @@ function RoomList() {
         setSelectedItem(null);
         searchData();
     };
+
+    // Call API from BE => setData(response.data);
+    useEffect(() => {
+        searchData();
+    }, [size, page, orderBy, orderDirection, searchData]);
 
     return (
         <section className="w-full">
