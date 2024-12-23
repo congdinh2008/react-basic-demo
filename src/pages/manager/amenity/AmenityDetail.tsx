@@ -1,9 +1,9 @@
 import { faEraser, faRotateLeft, faSearch } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import axios from "axios";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useEffect } from "react";
+import { AmenityService } from "../../../services/amenity.service";
 
 function AmenityDetail({ item, onCancel }: { item: any, onCancel: any }) {
 
@@ -24,15 +24,14 @@ function AmenityDetail({ item, onCancel }: { item: any, onCancel: any }) {
             isActive: Yup.boolean().required('Active is required').default(true)
         }),
         onSubmit: async (values) => {
-            const apiUrl = 'http://localhost:5134/api/v1/Amenities';
             let response: any;
             if (item) {
-                response = await axios.put(`${apiUrl}/${item.id}`, values);
+                response = await AmenityService.update(item.id, values);
             } else {
-                response = await axios.post(apiUrl, values);
+                response = await AmenityService.create(values);
             }
 
-            if (response.status === 200 && response.data) {
+            if (response) {
                 onCancel();
             } else {
                 console.error('Error:', response);

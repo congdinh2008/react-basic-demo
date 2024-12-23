@@ -1,9 +1,11 @@
 import { faEraser, faPlus, faSearch, faSortAlphaAsc, faSortAlphaDesc, faSortAmountAsc, faSortAmountDesc } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import AmenityDetail from "./AmenityDetail";
 import TablePagination from "../../../core/components/TablePagination";
+import { AmenityService } from "../../../services/amenity.service";
+import Loading from "../../../core/components/Loading";
+// import { useQuery } from "react-query";
 
 function AmenityList() {
     const [data, setData] = useState<any[]>([]);
@@ -15,6 +17,8 @@ function AmenityList() {
     const [orderBy, setOrderBy] = useState<string>('name');
     const [orderDirection, setOrderDirection] = useState<number>(0);
     const [pageInfo, setPageInfo] = useState<any>({});
+    const [loading, setLoading] = useState(true);
+
 
     const [columns, setColumns] = useState<any[]>([
         { field: 'name', label: 'Name', iconASC: faSortAlphaAsc, iconDESC: faSortAlphaDesc },
@@ -39,14 +43,31 @@ function AmenityList() {
                 orderBy: orderBy,
                 orderDirection: orderDirection
             };
-            const response: any = await axios.get('http://localhost:5134/api/v1/Amenities/search', { params: filter });
-            // http://localhost:5134/api/v1/Amenities/search?name=&page=1&size=10&orderBy=name&orderDirection=0
-            setData(response.data.items);
-            setPageInfo(response.data.pageInfo);
+            const response: any = await AmenityService.search(filter);
+            if (response) {
+                setInterval(() => {
+                    setLoading(false);
+                }, 0);
+            }
+            setData(response.items);
+            setPageInfo(response.pageInfo);
         } catch (error) {
             console.error('Error:', error);
         }
     };
+
+    // const fetchData = async() =>{
+    //     const filter: any = {
+    //         name: keyword,
+    //         page: page,
+    //         size: size,
+    //         orderBy: orderBy,
+    //         orderDirection: orderDirection
+    //     };
+    //     return await AmenityService.search(filter);
+    // }
+
+    // const { dataQuery } = useQuery('apiData',  fetchData());
 
     const handleSubmit = async (e: any) => {
         e.preventDefault();
@@ -81,7 +102,7 @@ function AmenityList() {
     const onDelete = async (item: any) => {
         let response: any;
         try {
-            response = await axios.delete(`http://localhost:5134/api/v1/Amenities/${item.id}`);
+            response = await AmenityService.remove(item.id);
         } catch (error) {
             console.error('Error:', error);
         }
@@ -96,6 +117,8 @@ function AmenityList() {
         setSelectedItem(null);
         searchData();
     };
+
+    if (loading) return <Loading />;
 
     return (
         <section className="w-full">
