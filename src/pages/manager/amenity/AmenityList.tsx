@@ -1,7 +1,7 @@
 import { faEraser, faPlus, faSearch, faSortAlphaAsc, faSortAlphaDesc, faSortAmountAsc, faSortAmountDesc } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import AmenityDetail from "./AmenityDetail";
 import TablePagination from "../../../core/components/TablePagination";
 
@@ -22,6 +22,8 @@ function AmenityList() {
         { field: 'description', label: 'Description', iconASC: faSortAlphaAsc, iconDESC: faSortAlphaDesc },
         { field: 'isActive', label: 'Active', iconASC: faSortAlphaAsc, iconDESC: faSortAlphaDesc },
     ]);
+
+    const detailForm = useRef<HTMLDivElement>(null);
 
     // Call API from BE => setData(response.data);
     useEffect(() => {
@@ -64,6 +66,8 @@ function AmenityList() {
         setTimeout(() => {
             setIsShowDetail(true);
         });
+        // Auto focus on detail form
+        detailForm.current?.scrollIntoView({ behavior: 'smooth' });
     };
 
     const onEdit = (item: any) => {
@@ -128,7 +132,9 @@ function AmenityList() {
             <TablePagination data={data} pageInfo={pageInfo} columns={columns} onEdit={onEdit} onDelete={onDelete} onSearch={onSearch} />
 
             {/* Details Component */}
-            {isShowDetail && (<AmenityDetail item={selectedItem} onCancel={() => onCancelDetail()} />)}
+            <div id="detail-form" ref={detailForm}>
+                {isShowDetail && (<AmenityDetail item={selectedItem} onCancel={() => onCancelDetail()} />)}
+            </div>
 
         </section>
     );

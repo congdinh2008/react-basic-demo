@@ -48,7 +48,7 @@ function AmenityDetail({ item, onCancel }: { item: any, onCancel: any }) {
     }, []);
 
     return (
-        <section className="w-full">
+        <div className="w-full mb-64">
             {/* Detail */}
             <div className="card border border-slate-300 rounded-md">
                 <div className="card-header p-3">
@@ -116,7 +116,7 @@ function AmenityDetail({ item, onCancel }: { item: any, onCancel: any }) {
                     </div>
                 </form>
             </div>
-        </section>
+        </div>
     );
 }
 
