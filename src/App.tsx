@@ -9,6 +9,8 @@ import AdminDashboard from './pages/manager/AdminDashboard';
 import AmenityList from './pages/manager/amenity/AmenityList';
 import RoomList from './pages/manager/room/RoomList';
 import Login from './pages/auth/Login';
+import AnonymousLayout from './shared/layouts/AnonymousLayout';
+import Register from './pages/auth/Register';
 
 function App() {
   return (
@@ -26,7 +28,8 @@ function App() {
           <Route path="/manager/rooms" element={<ManagerLayout><RoomList /></ManagerLayout>} />
 
           {/* Auth Router */}
-          <Route path="/auth/login" element={<CustomerLayout><Login /></CustomerLayout>} />
+          <Route path="/auth/login" element={<AnonymousLayout><Login /></AnonymousLayout>} />
+          <Route path="/auth/register" element={<AnonymousLayout><Register /></AnonymousLayout>} />
         </Routes>
 
       </div>
