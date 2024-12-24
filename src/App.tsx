@@ -12,6 +12,8 @@ import Login from './pages/auth/Login';
 import AnonymousLayout from './shared/layouts/AnonymousLayout';
 import Register from './pages/auth/Register';
 import { AuthProvider } from './contexts/auth.context';
+import PrivateRoute from './shared/components/PrivateRoute';
+import AnonymousRoute from './shared/components/AnonymousRoute';
 
 function App() {
   return (
@@ -25,13 +27,17 @@ function App() {
             <Route path="/contact" element={<CustomerLayout><Contact /></CustomerLayout>} />
 
             {/* Admin Router */}
-            <Route path="/manager/dashboard" element={<ManagerLayout><AdminDashboard /></ManagerLayout>} />
-            <Route path="/manager/amenities" element={<ManagerLayout><AmenityList /></ManagerLayout>} />
-            <Route path="/manager/rooms" element={<ManagerLayout><RoomList /></ManagerLayout>} />
+            <Route element={<PrivateRoute />}>
+              <Route path="/manager/dashboard" element={<ManagerLayout><AdminDashboard /></ManagerLayout>} />
+              <Route path="/manager/amenities" element={<ManagerLayout><AmenityList /></ManagerLayout>} />
+              <Route path="/manager/rooms" element={<ManagerLayout><RoomList /></ManagerLayout>} />
+            </Route>
 
-            {/* Auth Router */}
-            <Route path="/auth/login" element={<AnonymousLayout><Login /></AnonymousLayout>} />
-            <Route path="/auth/register" element={<AnonymousLayout><Register /></AnonymousLayout>} />
+            <Route element={<AnonymousRoute />}>
+              {/* Auth Router */}
+              <Route path="/auth/login" element={<AnonymousLayout><Login /></AnonymousLayout>} />
+              <Route path="/auth/register" element={<AnonymousLayout><Register /></AnonymousLayout>} />
+            </Route>
           </Routes>
 
         </div>
